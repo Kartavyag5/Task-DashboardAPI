@@ -107,7 +107,7 @@ AUTH_PASSWORD_VALIDATORS = [
 
 LANGUAGE_CODE = 'en-us'
 
-TIME_ZONE = 'asia/kolkata'
+TIME_ZONE = 'Asia/Kolkata'
 
 DATETIME_FORMAT="%d-%m-%Y_%H:%M:%S"
 
