@@ -1,0 +1,1 @@
+web: waitress-serve --port=$PORT Task_API.wsgi:application
