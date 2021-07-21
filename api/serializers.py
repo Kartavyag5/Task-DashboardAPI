@@ -10,9 +10,14 @@ class TagSerializer(serializers.ModelSerializer):
 
 class TaskSerializer(serializers.ModelSerializer):
     Tag = TagSerializer(many=True)
+    
     class Meta:
         model = Task
         Total_time = fields.Field(source = 'Total_time')
-        fields = ['id','Name','Discription','Phase','Tag','start_time','Deadline','Progress','Total_time','created_at', 'updated_at']
+        fields = ['id','Name','Discription','Phase','y_index','Tag','start_time','Deadline','Progress','Total_time','created_at', 'updated_at']
         
-        
+class TaskIndexSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Task
+        fields = ['id','Name','Phase','y_index']
+        read_only_fields =['Name']

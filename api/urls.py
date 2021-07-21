@@ -5,8 +5,5 @@ from .views import *
 
 
 urlpatterns = [
-    path('',TaskAPIView.as_view(),name="Tasks"),
-    path('<int:pk>', TaskDetailsAPIView.as_view(), name='Task_Details'),
-    path('tags',TagAPIView.as_view()),
-    path('tags/<int:pk>',TagDetailsAPIView.as_view())
+    path('test/<int:pk>',test,name='test'),
 ]

@@ -1,3 +1,4 @@
+from django.core.exceptions import ValidationError
 from django.db import models
 from django.core.validators import MaxValueValidator, MinValueValidator
 import datetime
@@ -21,6 +22,7 @@ class Task(models.Model):
     Tag = models.ManyToManyField(Tag)
     Discription = models.TextField(max_length=400)
     Phase = models.CharField(choices = Phase_Choices, default="To do", max_length=20)
+    y_index = models.IntegerField(default = None,null=True)
    
    #progress in '%'
     Progress = models.IntegerField(default=0,
@@ -43,7 +45,6 @@ class Task(models.Model):
         time = str((self.Deadline - self.start_time)/3600)[5:] + ' hour' #time in Hour Format
         
         return f'{time}'
-       
-
-
+        
+    
     
