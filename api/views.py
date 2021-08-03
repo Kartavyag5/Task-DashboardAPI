@@ -1,6 +1,8 @@
 import datetime
 from django.shortcuts import render, HttpResponse
-from rest_framework.viewsets import ModelViewSet
+
+from rest_framework.viewsets import ModelViewSet, ViewSet
+from rest_framework.response import Response
 from rest_framework.mixins import CreateModelMixin
 from rest_framework.generics import *
 from .serializers import *
@@ -15,26 +17,6 @@ class TaskAPIViewSet(ModelViewSet):
     search_fields = ['^Name', '^Phase']
     ordering_fields = '__all__'
     
-    '''
-    def create(self,request):
-        if request.POST:
-            name = request.POST['Name']
-            tag = request.POST['Tag']
-            Description = request.POST['Description']
-            phase = request.POST['Phase']
-            y_index = request.POST['y_index']
-            
-            task = User.objects.filter(Phase=phase, y_index=y_index)
-            if task:
-                y_index+=1
-            newtask = Task.objects.create(Name=name, Tag=tag, Description=Description, phase=Phase, y_index=y_index)
-            newtask.save()    
-    '''
-    
-class TaskIndexAPIViewSet(ModelViewSet):
-    serializer_class = TaskIndexSerializer
-    queryset = Task.objects.all()
-    
     
 class TagAPIViewset(ModelViewSet):
     serializer_class = TagSerializer
@@ -42,19 +24,27 @@ class TagAPIViewset(ModelViewSet):
     search_fields = ['^Name']
     ordering_fields = ['Name']
     
+class TaskInPhaseViewset(ModelViewSet):
+    serializer_class = PhaseSerializer
+    queryset = Phase.objects.all()
+    
+
+class TaskInPhaseViewset2(ModelViewSet):
+    serializer_class = PhaseDetailsSerializer
+    queryset = Phase.objects.filter(Phase='To do')
+    for items in queryset:
+        print(items.Phase)
+    def get(self,request,pk):
+        id=pk
+        phase = Phase.objects.all()
+        print(phase.Index)
+        
+
+        
+     
+
 
 # this function is only for testing purpose
-    
 def test(request,pk):
     pass
         
-'''
-    qs = Task.objects.all()
-    for items in qs:
-        start_time = items.start_time
-    date1 = datetime.datetime.now() - datetime.datetime(start_time)
-    date2 =datetime.datetime(2021,7,17,12,4,30)
-    date3 = date1 - date2
-    return HttpResponse(date1)
-'''
-    
