@@ -17,7 +17,7 @@ class Task(models.Model):
     Tags = models.CharField(max_length = 50, default=None)
     Discription = models.TextField(max_length=400)
     Phase = models.CharField(choices = Phase_Choices, default="To do", max_length=20)
-    Index = models.IntegerField(default = None, validators=[MinValueValidator(1)])
+    Index = models.IntegerField(default = 1, validators=[MinValueValidator(1)])
    
    # progress in '%'
     Progress = models.IntegerField(default=0,

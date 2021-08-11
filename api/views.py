@@ -37,7 +37,7 @@ class PhaseViewSet(ViewSet):
         
         #Re arrenge list after create new Task
         q = Task.objects.filter(Phase='To do').annotate(Count('Index')).order_by('Index')
-        print(q.count())
+        print('To do re-arrenge')
         count=q.count()
         for i in range(0,count):
             Task.objects.filter(Phase='To do',Name=q[i]).update(Index=i+1)
@@ -78,11 +78,11 @@ class PhaseViewSet(ViewSet):
         return Response(Phases)
 
 
-    # def retrieve(self, request, pk=None):
-    #     queryset = Task.objects.filter(id=pk)
-    #     task = get_object_or_404(queryset, pk=pk)
-    #     serializer = PhaseSerializer(task)
-    #     return Response(serializer.data)
+    def retrieve(self, request, pk=None):
+        queryset = Task.objects.filter(id=pk)
+        task = get_object_or_404(queryset, pk=pk)
+        serializer = PhaseSerializer(task)
+        return Response(serializer.data)
 
 
 @api_view(['GET','PUT'])
