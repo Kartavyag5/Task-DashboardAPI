@@ -88,8 +88,7 @@ class PhaseViewSet(ViewSet):
 @api_view(['GET','PUT'])
 def partial_update(request,pk,*args, **kwargs):
     task = Task.objects.get(id=pk)
-    task_id=pk
-    old_phase_obj = Task.objects.filter(Phase=task.Phase).exclude(id=pk)
+
     old_phase = task.Phase
     old_index = task.Index
     serializer = PhaseSerializer(task, data=request.data, partial=True)
@@ -100,8 +99,7 @@ def partial_update(request,pk,*args, **kwargs):
         new_phase = request.data.get('Phase')
         new_index = request.data.get('Index')
         new_phase_obj = Task.objects.filter(Phase=new_phase)
-        id_list = []
-       
+      
         for items in new_phase_obj:
             
             if Task.objects.filter(Phase=new_phase).count()==1:
@@ -138,54 +136,8 @@ def partial_update(request,pk,*args, **kwargs):
         for i in range(0,count):
             Task.objects.filter(Phase=old_phase,Name=q2[i]).update(Index=i+1)
 
+        Index_Change_Payload = {'id':pk, 'old_phase':old_phase, 'old_index':old_index, 'new_phase':new_phase, 'new_index':new_index}
+        return Response(Index_Change_Payload)
+    
     return Response(serializer.data)
-
-
-#---------------------------------------------------------------------------------------------------
-        # if new_phase != old_phase:
-        #     for items in old_phase_obj:
-
-        #         if Task.objects.filter(Phase=old_phase).count()==1:
-        #             Task.objects.filter(Index=items.Index, Phase=old_phase).update(Index=1)
-
-        #         elif items.Index > old_index:
-        #             ex =[i for i in range(1,old_index+1)]
-        #             Task.objects.filter(Index=items.Index, Phase=old_phase).exclude(Index__in=ex).update(Index=items.Index - 1)
-        #             print('elif 3')
-                        
-        #     for items in new_phase_obj:
-
-        #         if Task.objects.filter(Phase=new_phase).count()==1:
-        #             Task.objects.filter(Index=items.Index, Phase=new_phase).update(Index=1)
-
-        #         elif items.Index >= new_index:
-        #             ex = [i for i in range(1,new_index+1)]
-        #             Task.objects.filter(Index=items.Index, Phase=new_phase).exclude(Index__in=ex).update(Index=items.Index + 1)
-        #             print("if 4")
-    '''
-        max_index = Task.objects.filter(Phase=new_phase).aggregate(Max('Index'))['Index__max']
-        print(max_index)
-
-        #this code for update the same index if exists
-        id_list.append(task_id)
-        for i in range(0,(max_index-new_index)+1):
-            index = new_index + i
-            task2=Task.objects.filter(Phase=new_phase, Index=index).exclude(id__in=id_list)
-            if task2.exists():
-                Task.objects.filter(Index=index, Phase=new_phase).exclude(id__in=id_list).update(Index= index + 1)
-                for items in task2:
-                    id_list.append(items.id)
-                print(id_list)
-    '''
-
-
-
-
-'''        
-https://docs.djangoproject.com/en/3.2/ref/models/querysets/#bulk-update
-
-https://stackoverflow.com/questions/36765184/way-to-bulk-update-with-unique-values-in-django
-
-https://www.django-rest-framework.org/api-guide/routers/#routing-for-extra-actions
-'''
 
