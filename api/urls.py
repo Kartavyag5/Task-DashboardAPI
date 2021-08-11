@@ -5,5 +5,5 @@ from .views import *
 
 
 urlpatterns = [
-    path('test/<int:pk>',test,name='test'),
+    path('<int:pk>',partial_update,name='partial')
 ]

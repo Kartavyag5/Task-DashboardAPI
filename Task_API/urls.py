@@ -7,17 +7,16 @@ router = DefaultRouter()
 
 router.register('TaskAPI',views.TaskAPIViewSet, basename='task')
 
-router.register('TagAPI',views.TagAPIViewset, basename='tag')
-router.register('TaskInPhaseAPI',views.TaskInPhaseViewset, basename='phase')
-router.register('TaskInPhaseAPI/1',views.TaskInPhaseViewset, basename='phaseTask')
-router.register('TaskInPhaseAPI2',views.TaskInPhaseViewset2, basename='phaseTask2')
+
+router.register('PhaseAPI',views.PhaseViewSet, basename='Phase')
+
 
 
 
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('', include(router.urls)),
-    #path('api/', include('api.urls')),
+    path('phase/', include('api.urls')),
     path('api-auth/',include('rest_framework.urls')),
     
 ]

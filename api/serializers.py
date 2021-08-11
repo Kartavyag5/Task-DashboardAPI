@@ -1,41 +1,32 @@
-from rest_framework import serializers , fields
-from rest_framework.validators import UniqueTogetherValidator
+from rest_framework import serializers, fields
 from .models import *
-#from rest_framework.fields import Field
 
-class TagSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = Tag
-        fields = ['id','name']
         
-
-class TaskSerializer(serializers.ModelSerializer):
-    Tag = TagSerializer(many=True)
-    
+class TaskSerializer(serializers.ModelSerializer):    
     class Meta:
         model = Task
         Total_time = fields.Field(source = 'Total_time')
-        fields = ['id','Name','Discription','Tag','start_time','Deadline','Progress','Total_time','created_at', 'updated_at']
+        Tag_list = fields.Field(source = 'Tag_list')
+        fields = ['id','Name','Discription','Phase','Index','Tags','Tag_list','start_time','Deadline','Progress','Total_time','created_at', 'updated_at']
+        extra_kwargs = {
+            'Tags': {'write_only': True},
+            'Index': {'write_only': True},
+            'Phase': {'write_only': True}
+        }
+        
+        
         
 
 
 class PhaseSerializer(serializers.ModelSerializer):
-    
-    
     class Meta:
-        model = Phase
-        Task_in_phase = fields.Field(source = 'Task_in_phase')
-        fields = ['Task_in_phase']
+        model = Task
+        fields = ['id','Name','Phase','Index']
+        # validators = [
+        #      UniqueTogetherValidator(
+        #          queryset=Phase.objects.filter(Phase='To do'),
+        #          fields=['Phase', 'Index']
+        #      )]
+        #read_only_fields = ['Name']
+
         
-class PhaseDetailsSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = Phase
-        
-        fields = ['id','Phase','Index','Tasks']
-        read_only_fields = []
-        validators = [
-            UniqueTogetherValidator(
-                queryset=Phase.objects.filter(Phase='To do'),
-                fields=['Phase', 'Index']
-            )
-        ]
