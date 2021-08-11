@@ -124,14 +124,14 @@ def partial_update(request,pk,*args, **kwargs):
              
         # re-arrenge index of new Phase
         q = Task.objects.filter(Phase=new_phase).annotate(Count('Index')).order_by('Index')
-        print(q.count())
+        print('Re-arrenge')
         count=q.count()
         for i in range(0,count):
             Task.objects.filter(Phase=new_phase,Name=q[i]).update(Index=i+1)
 
         #re-arrenge index of old Phase
         q2 = Task.objects.filter(Phase=old_phase).annotate(Count('Index')).order_by('Index')
-        print(q2.count())
+        print('Re-arrenge')
         count=q2.count()
         for i in range(0,count):
             Task.objects.filter(Phase=old_phase,Name=q2[i]).update(Index=i+1)
