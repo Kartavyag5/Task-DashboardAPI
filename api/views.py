@@ -1,7 +1,7 @@
 from django.shortcuts import  get_object_or_404
 from rest_framework.viewsets import ModelViewSet, ViewSet
 from rest_framework.response import Response
-from rest_framework import generics
+
 from .serializers import *
 from .models import *
 from rest_framework.filters import SearchFilter,OrderingFilter
