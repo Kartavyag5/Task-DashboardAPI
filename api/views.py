@@ -36,11 +36,11 @@ class PhaseViewSet(ViewSet):
             return e['Index']
         
         #Re arrenge list after create new Task
-        # q = Task.objects.filter(Phase='To do').annotate(Count('Index')).order_by('Index')
-        # print('To do re-arrenge')
-        # count=q.count()
-        # for i in range(0,count):
-        #     Task.objects.filter(Phase='To do',Name=q[i]).update(Index=i+1)
+        q = Task.objects.filter(Phase='To do').annotate(Count('Index')).order_by('Index')
+        print('To do re-arrenge')
+        count=q.count()
+        for i in range(0,count):
+            Task.objects.filter(Phase='To do',Name=q[i]).update(Index=i+1)
         
         Todo_obj = Task.objects.filter(Phase='To do')
         for item in Todo_obj:
