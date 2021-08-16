@@ -36,11 +36,11 @@ class PhaseViewSet(ViewSet):
             return e['Index']
         
         #Re arrenge list after create new Task
-        q = Task.objects.filter(Phase='To do').annotate(Count('Index')).order_by('Index')
-        print('To do re-arrenge')
-        count=q.count()
-        for i in range(0,count):
-            Task.objects.filter(Phase='To do',Name=q[i]).update(Index=i+1)
+        # q = Task.objects.filter(Phase='To do').annotate(Count('Index')).order_by('Index')
+        # print('To do re-arrenge')
+        # count=q.count()
+        # for i in range(0,count):
+        #     Task.objects.filter(Phase='To do',Name=q[i]).update(Index=i+1)
         
         Todo_obj = Task.objects.filter(Phase='To do')
         for item in Todo_obj:
@@ -90,6 +90,7 @@ def partial_update(request,pk,*args, **kwargs):
     task = Task.objects.get(id=pk)
 
     old_phase = task.Phase
+    old_phase_obj = Task.objects.filter(Phase=old_phase)
     old_index = task.Index
     serializer = PhaseSerializer(task, data=request.data, partial=True)
     if serializer.is_valid():
@@ -99,42 +100,85 @@ def partial_update(request,pk,*args, **kwargs):
         new_phase = request.data.get('Phase')
         new_index = request.data.get('Index')
         new_phase_obj = Task.objects.filter(Phase=new_phase)
-      
-        for items in new_phase_obj:
-            
-            if Task.objects.filter(Phase=new_phase).count()==1:
-                Task.objects.filter(Index=items.Index, Phase=new_phase).update(Index=1)
 
-            if old_index < items.Index:                
-                Task.objects.filter(Index=items.Index, Phase=old_phase).exclude(Index=pk).update(Index= items.Index - 1)
-                print("elif 1")
-            
-            
-            elif new_index < items.Index:
-                                
-                Task.objects.filter(Index=items.Index, Phase=new_phase).exclude(Index=pk).update(Index= items.Index + 1)
-                print('elif 2')
+
+        # if two phases are same
+        if new_phase==old_phase:
+            for items in new_phase_obj:
+                count = Task.objects.filter(Phase=new_phase).count()
+                if count==new_index :
+                    Task.objects.filter(id=pk, Phase=old_phase).update(Index= count+1)
+                    new_index += 1
+                    print("count1")
+                    break
+
+                if new_index==1:
+                    Task.objects.filter(id=pk, Phase=old_phase).update(Index= 0)
+                    print("count2")
+                    break
+
+                elif old_index < new_index:
+                    if items.Index > old_index and items.Index <= new_index:                
+                        Task.objects.filter(Index=items.Index, Phase=old_phase).exclude(id__exact=pk).update(Index= items.Index - 1)
+                        print("elif 1")
+                    
+                elif new_index < old_index:
+                    if items.Index > new_index:     
+                        Task.objects.filter(Index=items.Index, Phase=new_phase).exclude(id__exact=pk).update(Index= items.Index + 1)
+                        print('elif 2')
+
+        #two phases are different
+        else:
+            count=Task.objects.filter(Phase=new_phase).count()
+            for items in new_phase_obj:
+                if new_index==1:
+                    Task.objects.filter(id=pk, Phase=new_phase).update(Index= 0)
+                    print("Index1")
+                    break
                 
-        # this checks the if same phase and same index already exists:
-        task2=Task.objects.filter(Phase=new_phase, Index=new_index).exclude(id=pk)
-        if task2.exists():
-            Task.objects.filter(Index=new_index, Phase=new_phase).exclude(id=pk).update(Index= new_index + 1)
-            print('if exists')
+                if new_index==count:
+                    Task.objects.filter(id=pk, Phase=new_phase).update(Index= count+1)
+                    new_index += 1
+                    print("Index-count")
+                    break
+                
+                if new_index <= items.Index:                        
+                    Task.objects.filter(Index=items.Index, Phase=new_phase).exclude(id__exact=pk).update(Index= items.Index + 1)
+                    print('elif 4')
 
+        # this checks the if same phase and same index already exists:
+        task2=Task.objects.filter(Phase=new_phase, Index=new_index).exclude(id__exact=pk)
+        if task2.exists():
+            if count==new_index:
+                task3=Task.objects.filter(Phase=new_phase).exclude(id__exact=pk)
+                for items in task3:
+                    Task.objects.filter(Phase=new_phase).exclude(id__exact=pk).update(Index=items.Index-1)
+                print('if exists')
+
+            if count > new_index:
+                Task.objects.filter(Index=new_index, Phase=new_phase).exclude(id__exact=pk).update(Index= new_index + 1)
+                print('if exists2')
+            
              
         # re-arrenge index of new Phase
         q = Task.objects.filter(Phase=new_phase).annotate(Count('Index')).order_by('Index')
-        print('Re-arrenge')
+        print('Re-arrenge1')
         count=q.count()
+        lst = []
         for i in range(0,count):
-            Task.objects.filter(Phase=new_phase,Name=q[i]).update(Index=i+1)
-
+            lst.append(q[i])
+        for i in range(0,count):
+            Task.objects.filter(Phase=new_phase,Name=lst[i]).update(Index=i+1)
+            
         #re-arrenge index of old Phase
         q2 = Task.objects.filter(Phase=old_phase).annotate(Count('Index')).order_by('Index')
-        print('Re-arrenge')
+        print('Re-arrenge2')
         count=q2.count()
+        lst2 = []
         for i in range(0,count):
-            Task.objects.filter(Phase=old_phase,Name=q2[i]).update(Index=i+1)
+            lst2.append(q2[i])
+        for i in range(0,count):
+            Task.objects.filter(Phase=old_phase,Name=lst2[i]).update(Index=i+1)
 
         Index_Change_Payload = {'id':pk, 'old_phase':old_phase, 'old_index':old_index, 'new_phase':new_phase, 'new_index':new_index}
         return Response(Index_Change_Payload)
